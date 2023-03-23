@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace AnimeShop.Common
 {
 	public class Discount

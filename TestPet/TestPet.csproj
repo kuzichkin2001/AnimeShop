@@ -14,4 +14,8 @@
     <Folder Include="Controllers" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AnimeShop.TelegramBot\AnimeShop.TelegramBot\AnimeShop.TelegramBot.csproj" />
+  </ItemGroup>
+
 </Project>

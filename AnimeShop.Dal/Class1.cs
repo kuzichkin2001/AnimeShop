@@ -1,6 +1,7 @@
-﻿namespace AnimeShop.Dal;
-public class Class1
+﻿namespace AnimeShop.Dal
 {
+    public class Class1
+    {
 
+    }
 }
-

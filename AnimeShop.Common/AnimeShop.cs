@@ -1,6 +1,8 @@
-﻿namespace AnimeShop.Common;
-public class AnimeShop
+﻿namespace AnimeShop.Common
 {
+    public class AnimeShop
+    {
     
+    }
 }
 

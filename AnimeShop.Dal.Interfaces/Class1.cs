@@ -1,7 +1,6 @@
-﻿namespace AnimeShop.Bll
+﻿namespace AnimeShop.Dal.Interfaces
 {
     public class Class1
     {
-
     }
 }

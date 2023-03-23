@@ -1,15 +1,15 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using AnimeShop.Common;
 
 namespace AnimeShop.Dal.DbContexts
 {
-	public class NpgsqlContext : DbContext
+	public sealed class NpgsqlContext : DbContext
 	{
 		public NpgsqlContext(DbContextOptions<NpgsqlContext> options)
 			:base(options)
 		{
 			Database.EnsureCreated();
+			
 		}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -10,7 +10,7 @@ using Telegram.Bot.Types;
 
 namespace AnimeShop.TelegramBot
 {
-    public class TelegramBotCommunications
+    public static class TelegramBotCommunications
     {
         private static TelegramBotClient _tgBot;
 
@@ -18,8 +18,11 @@ namespace AnimeShop.TelegramBot
         {
             string folder = Directory.GetCurrentDirectory();
             DirectoryInfo dir = new(folder);
-            List<FileInfo> projectRootDir = dir.Parent.Parent.Parent.EnumerateFiles().ToList();
-            string environ = projectRootDir.Find(f => f.Name == ".env").FullName;
+            List<DirectoryInfo> projectRootDir = dir.Parent.GetDirectories().ToList();
+            string tgBotDirectory = projectRootDir.Find(d => d.Name == "AnimeShop.TelegramBot").FullName;
+            DirectoryInfo tgDir = new(tgBotDirectory + @"\AnimeShop.TelegramBot");
+            List<FileInfo> tgFilesData = tgDir.GetFiles().ToList();
+            string environ = tgFilesData.Find(f => f.Name == ".env").FullName;
 
             using (StreamReader sr = new(environ, Encoding.UTF8))
             {
