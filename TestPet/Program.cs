@@ -1,8 +1,7 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using AnimeShop.Dal.DbContexts;
 using AnimeShop.TelegramBot;
+using AnimeShop.Common;
 
 namespace TestPet
 {
@@ -18,6 +17,16 @@ namespace TestPet
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            var config = builder.Configuration
+                .GetSection("EnvironmentVariables")
+                .Get<EnvironmentVariables>();
+
+            builder.Services.AddEntityFrameworkNpgsql().AddDbContext<NpgsqlContext>(
+                options =>
+                {
+                    options.UseNpgsql(config?.NpgsqlConnectionString);
+                });
 
             var app = builder.Build();
 

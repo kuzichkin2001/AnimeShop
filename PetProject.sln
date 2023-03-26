@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeShop.Common", "AnimeSh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeShop.Bll", "AnimeShop.Bll\AnimeShop.Bll.csproj", "{EC710490-F36E-40F7-B4A2-62F744885068}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeShop.Dal", "AnimeShop.Dal\AnimeShop.Dal.csproj", "{9551F5CB-E0A0-46EF-BA34-B4748608260D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeShop.EFDal", "AnimeShop.EFDal\AnimeShop.EFDal.csproj", "{9551F5CB-E0A0-46EF-BA34-B4748608260D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimeShop.TelegramBot", "AnimeShop.TelegramBot\AnimeShop.TelegramBot\AnimeShop.TelegramBot.csproj", "{FF1F871E-E7B4-441D-8253-5E38B74370A3}"
 EndProject

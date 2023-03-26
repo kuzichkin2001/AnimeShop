@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>AnimeShop.Dal</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,5 +18,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AnimeShop.Common\AnimeShop.Common.csproj" />
+    <ProjectReference Include="..\AnimeShop.Dal.Interfaces\AnimeShop.Dal.Interfaces.csproj" />
   </ItemGroup>
 </Project>
