@@ -2,27 +2,34 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace AnimeShop.TelegramBot
 {
     public static class TelegramBotCommunications
     {
         private static TelegramBotClient _tgBot;
+        private static InlineKeyboardMarkup Keyboard = new(new[]
+        {
+            new[]
+            {
+                InlineKeyboardButton.WithCallbackData("Сгенерировать пароль", "/getpassword")
+            }
+        });
 
         static TelegramBotCommunications()
         {
             string folder = Directory.GetCurrentDirectory();
+            Console.WriteLine(folder);
             DirectoryInfo dir = new(folder);
-            List<DirectoryInfo> projectRootDir = dir.Parent.GetDirectories().ToList();
-            string tgBotDirectory = projectRootDir.Find(d => d.Name == "AnimeShop.TelegramBot").FullName;
-            DirectoryInfo tgDir = new(tgBotDirectory + @"\AnimeShop.TelegramBot");
-            List<FileInfo> tgFilesData = tgDir.GetFiles().ToList();
-            string environ = tgFilesData.Find(f => f.Name == ".env").FullName;
+            List<FileInfo> projectRootDir = dir.Parent.Parent.Parent.GetFiles().ToList();
+            string environ = projectRootDir.Find(f => f.Name == ".env").FullName;
 
             using (StreamReader sr = new(environ, Encoding.UTF8))
             {
@@ -53,19 +60,12 @@ namespace AnimeShop.TelegramBot
         {
             var message = update.Message.Text;
             var chatId = update.Message.Chat.Id;
-            Console.WriteLine(message);
-            Random rnd = new();
+            Random rnd = new Random();
 
             switch (message)
             {
                 case "/start":
-                    await tgClient.SendTextMessageAsync(update.Message.Chat.Id, "Стартуем, йопта!");
-                    break;
-                case "/count":
-                    await tgClient.SendTextMessageAsync(update.Message.Chat.Id, (rnd.Next() * rnd.Next()).ToString());
-                    break;
-                case "/myname":
-                    await tgClient.SendTextMessageAsync(update.Message.Chat.Id, chatId.ToString());
+                    await tgClient.SendTextMessageAsync(chatId, "Добро пожаловать!", replyMarkup: Keyboard, cancellationToken: token);
                     break;
                 case "/getpassword":
                     byte[] bytes = new byte[25];
@@ -79,7 +79,7 @@ namespace AnimeShop.TelegramBot
                         resultPassword += rndUpper ? (char) (c - 32) : (char) c;
                     }
                     
-                    await tgClient.SendTextMessageAsync(update.Message.Chat.Id, resultPassword);
+                    await tgClient.SendTextMessageAsync(update.Message.Chat.Id, resultPassword, replyMarkup: Keyboard, cancellationToken: token);
                     break;
                 default:
                     await tgClient.SendTextMessageAsync(update.Message.Chat.Id, "Ты че, идиот?");

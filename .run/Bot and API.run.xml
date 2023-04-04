@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Bot and API" type="CompoundRunConfigurationType">
+    <toRun name="TestPet" type="LaunchSettings" />
+    <toRun name="AnimeShop.TelegramBot" type="DotNetProject" />
+    <method v="2" />
+  </configuration>
+</component>

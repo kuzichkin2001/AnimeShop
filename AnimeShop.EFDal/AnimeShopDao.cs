@@ -1,24 +1,32 @@
-﻿using AnimeShop.Dal.DbContexts;
+﻿using AnimeShop.Common;
+using AnimeShop.Dal.DbContexts;
 using AnimeShop.Dal.Interfaces;
+using AnimeShop.EFDal;
+using Microsoft.EntityFrameworkCore;
 
-namespace AnimeShop.EFDal
+namespace AnimeShop.Dal;
+
+public class AnimeShopDao : BaseDao, IAnimeShopDao
 {
-    public class AnimeShopDao : BaseDao, IAnimeShopDao
+    public AnimeShopDao(NpgsqlContext context)
+        : base(context)
     {
-        public AnimeShopDao(NpgsqlContext context)
-            : base(context)
-        {
-            
-        }
-        
-        public Common.AnimeShop getAnimeShopById(int id)
-        {
-            throw new NotImplementedException();
-        }
+    }
 
-        public List<Common.AnimeShop> getAllUsers()
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<Common.AnimeShop?> GetAnimeShopByIdAsync(int id)
+    {
+        return await DNpgsqlContext.AnimeShops.FirstOrDefaultAsync(a => a.Id == id);
+    }
+
+    public async Task<IEnumerable<Product>> GetProductsOfAnimeShopAsync(int id)
+    {
+        var animeShop = await DNpgsqlContext.AnimeShops.FirstAsync(a => a.Id == id);
+
+        return animeShop.Products;
+    }
+
+    public IEnumerable<Common.AnimeShop> GetAllAnimeShopsAsync()
+    {
+        return DNpgsqlContext.AnimeShops;
     }
 }

@@ -5,9 +5,9 @@ using AnimeShop.Common;
 
 namespace TestPet
 {
-    public class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +43,10 @@ namespace TestPet
 
             app.MapControllers();
 
-            Parallel.Invoke(TelegramBotCommunications.StartPolling, app.Run);
+            var options = new DbContextOptionsBuilder<NpgsqlContext>();
+            options.UseNpgsql(config?.NpgsqlConnectionString);
+
+            app.Run();
         }
     }
 }

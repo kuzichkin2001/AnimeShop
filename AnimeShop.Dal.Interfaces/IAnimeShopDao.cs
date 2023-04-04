@@ -4,8 +4,9 @@ namespace AnimeShop.Dal.Interfaces
 {
     public interface IAnimeShopDao
     {
-        Common.AnimeShop getAnimeShopById(int id);
-        List<Common.AnimeShop> getAllUsers();
+        Task<Common.AnimeShop?> GetAnimeShopByIdAsync(int id);
+        Task<IEnumerable<Product>> GetProductsOfAnimeShopAsync(int id);
+        IEnumerable<Common.AnimeShop> GetAllAnimeShopsAsync();
 
     }
 }
