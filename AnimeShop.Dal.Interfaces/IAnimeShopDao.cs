@@ -6,7 +6,8 @@ namespace AnimeShop.Dal.Interfaces
     {
         Task<Common.AnimeShop?> GetAnimeShopByIdAsync(int id);
         Task<IEnumerable<Product>> GetProductsOfAnimeShopAsync(int id);
-        IEnumerable<Common.AnimeShop> GetAllAnimeShopsAsync();
-
+        IEnumerable<Common.AnimeShop> GetAllAnimeShops();
+        Task<bool> RemoveAnimeShopAsync(int id);
+        Task UpdateAnimeShopAsync(Common.AnimeShop animeShop);
     }
 }

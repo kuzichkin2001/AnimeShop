@@ -25,8 +25,23 @@ public class AnimeShopDao : BaseDao, IAnimeShopDao
         return animeShop.Products;
     }
 
-    public IEnumerable<Common.AnimeShop> GetAllAnimeShopsAsync()
+    public IEnumerable<Common.AnimeShop> GetAllAnimeShops()
     {
         return DNpgsqlContext.AnimeShops;
+    }
+
+    public async Task<bool> RemoveAnimeShopAsync(int id)
+    {
+        var animeshop = await GetAnimeShopByIdAsync(id);
+        DNpgsqlContext.AnimeShops.Remove(animeshop);
+
+        var animeshopsCount = await DNpgsqlContext.SaveChangesAsync();
+        return animeshopsCount != 0;
+    }
+
+    public async Task UpdateAnimeShopAsync(Common.AnimeShop animeShop)
+    {
+        DNpgsqlContext.Update(animeShop);
+        await DNpgsqlContext.SaveChangesAsync();
     }
 }

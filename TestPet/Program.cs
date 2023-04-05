@@ -45,8 +45,12 @@ namespace TestPet
 
             var options = new DbContextOptionsBuilder<NpgsqlContext>();
             options.UseNpgsql(config?.NpgsqlConnectionString);
+            var context = new NpgsqlContext(options.Options);
+            var products = context.Products.ToList();
+            var users = context.Users.ToList();
+            var animeshops = context.AnimeShops.ToList();
 
-            app.Run();
+            // app.Run();
         }
     }
 }
