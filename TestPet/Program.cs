@@ -7,6 +7,7 @@ using AnimeShop.TelegramBot;
 using AnimeShop.Common;
 using AnimeShop.Dal;
 using AnimeShop.Dal.Interfaces;
+using AutoMapper;
 
 namespace TestPet
 {
@@ -22,7 +23,7 @@ namespace TestPet
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddLogging();
-
+            
             builder.Services.AddScoped<IUserDao, UserDao>();
             builder.Services.AddScoped<IAnimeShopDao, AnimeShopDao>();
             builder.Services.AddScoped<IProductDao, ProductDao>();
@@ -41,7 +42,16 @@ namespace TestPet
                 .GetSection("EnvironmentVariables")
                 .Get<EnvironmentVariables>();
 
-            builder.Services.AddEntityFrameworkNpgsql().AddDbContext<NpgsqlContext>(
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                var mappingProfile = new MappingProfile();
+                mc.AddProfile(mappingProfile);
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            builder.Services.AddSingleton(mapper);
+
+            builder.Services.AddDbContext<NpgsqlContext>(
                 options =>
                 {
                     options.UseNpgsql(config?.NpgsqlConnectionString);
@@ -64,8 +74,7 @@ namespace TestPet
 
             var options = new DbContextOptionsBuilder<NpgsqlContext>();
             options.UseNpgsql(config?.NpgsqlConnectionString);
-            var context = new NpgsqlContext(options.Options);
-
+            
             app.Run();
         }
     }

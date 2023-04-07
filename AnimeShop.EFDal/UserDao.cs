@@ -8,7 +8,7 @@ namespace AnimeShop.Dal;
 
 public class UserDao : BaseDao, IUserDao
 {
-    protected UserDao(NpgsqlContext context) : base(context)
+    public UserDao(NpgsqlContext context) : base(context)
     {
     }
 
@@ -29,5 +29,13 @@ public class UserDao : BaseDao, IUserDao
         var user = await DNpgsqlContext.Users.FirstOrDefaultAsync(u => u.Email == login);
 
         return user?.Password.Equals(oneTimePassword);
+    }
+
+    public async Task<bool?> ChangePersonalInfoAsync(User user)
+    {
+        DNpgsqlContext.Update(user);
+        var userCount = await DNpgsqlContext.SaveChangesAsync();
+
+        return userCount != 0;
     }
 }

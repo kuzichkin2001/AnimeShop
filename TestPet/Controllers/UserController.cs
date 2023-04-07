@@ -5,7 +5,7 @@ using TestPet.Views;
 
 namespace TestPet.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -20,7 +20,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    [Route("register")]
+    [Route("user/register")]
     public async Task<IActionResult> Register(UserCredentialsView userCredentials)
     {
         var user = _mapper.Map<AnimeShop.Common.User>(userCredentials);
@@ -28,5 +28,57 @@ public class UserController : ControllerBase
         await _userLogic.RegisterUserAsync(user);
 
         return Ok();
+    }
+
+    [HttpGet]
+    [Route("user/receive")]
+    public async Task<IActionResult> GetUser(UserCredentialsView userCredentials)
+    {
+        try
+        {
+            var user = _mapper.Map<AnimeShop.Common.User>(userCredentials);
+            var result = await _userLogic.GetUserAsync(user.Email, user.Password);
+
+            return Ok(result);
+        }
+        catch (Exception exp)
+        {
+            return BadRequest($"{exp.GetType()}: {exp.Message}");
+        }
+    }
+
+    [HttpGet]
+    [Route("user/check_existence")]
+    public async Task<IActionResult> CheckUserExistence(UserCredentialsView userCredentials)
+    {
+        var user = _mapper.Map<AnimeShop.Common.User>(userCredentials);
+        var result = await _userLogic.CheckUserCredentialsAsync(user.Email, user.Password);
+
+        if (result.HasValue && result.Value)
+        {
+            return Ok();
+        }
+
+        return BadRequest($"There's no user with such credentials.");
+    }
+
+    [HttpPut]
+    [Route("user/change")]
+    public async Task<IActionResult> ChangeUserPersonalInfo(UserCredentialsView userCreds)
+    {
+        try
+        {
+            var user = _mapper.Map<AnimeShop.Common.User>(userCreds);
+            var result = await _userLogic.ChangePersonalInfoAsync(user);
+            
+            
+
+            return Ok(result);
+        }
+        catch (Exception exp)
+        {
+            return BadRequest($"There's no user with such credentials.\n" +
+                              $"{exp.GetType()}: {exp.Message}");
+        }
     }
 }

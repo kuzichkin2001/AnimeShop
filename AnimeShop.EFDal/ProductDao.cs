@@ -8,7 +8,7 @@ namespace AnimeShop.Dal;
 
 public class ProductDao : BaseDao, IProductDao
 {
-    protected ProductDao(NpgsqlContext context) : base(context)
+    public ProductDao(NpgsqlContext context) : base(context)
     {
     }
 
@@ -25,6 +25,7 @@ public class ProductDao : BaseDao, IProductDao
     public async Task CreateProductAsync(Product product)
     {
         await DNpgsqlContext.Products.AddAsync(product);
+        await DNpgsqlContext.SaveChangesAsync();
     }
 
     public async Task<bool> DeleteProductAsync(int id)

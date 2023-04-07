@@ -28,4 +28,9 @@ public class UserLogic : BaseLogic, IUserLogic
     {
         return await _userDao.CheckUserCredentialsAsync(login, oneTimePassword);
     }
+
+    public async Task<bool?> ChangePersonalInfoAsync(User user)
+    {
+        return await _userDao.ChangePersonalInfoAsync(user);
+    }
 }
