@@ -7,15 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0-preview.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\AnimeShop.Bll.Interfaces\AnimeShop.Bll.Interfaces.csproj" />
+    <ProjectReference Include="..\AnimeShop.Bll\AnimeShop.Bll.csproj" />
     <ProjectReference Include="..\AnimeShop.EFDal\AnimeShop.EFDal.csproj" />
     <ProjectReference Include="..\AnimeShop.TelegramBot\AnimeShop.TelegramBot\AnimeShop.TelegramBot.csproj" />
   </ItemGroup>

@@ -1,7 +1,12 @@
+using System.Text.Json.Serialization;
+using AnimeShop.Bll;
+using AnimeShop.Bll.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AnimeShop.Dal.DbContexts;
 using AnimeShop.TelegramBot;
 using AnimeShop.Common;
+using AnimeShop.Dal;
+using AnimeShop.Dal.Interfaces;
 
 namespace TestPet
 {
@@ -13,10 +18,24 @@ namespace TestPet
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddLogging();
+
+            builder.Services.AddScoped<IUserDao, UserDao>();
+            builder.Services.AddScoped<IAnimeShopDao, AnimeShopDao>();
+            builder.Services.AddScoped<IProductDao, ProductDao>();
+            builder.Services.AddScoped<IUserLogic, UserLogic>();
+            builder.Services.AddScoped<IAnimeShopLogic, AnimeShopLogic>();
+            builder.Services.AddScoped<IProductLogic, ProductLogic>();
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                var jsonConverter = new JsonStringEnumConverter();
+                options.JsonSerializerOptions.Converters.Add(jsonConverter);
+            });
 
             var config = builder.Configuration
                 .GetSection("EnvironmentVariables")
@@ -46,11 +65,8 @@ namespace TestPet
             var options = new DbContextOptionsBuilder<NpgsqlContext>();
             options.UseNpgsql(config?.NpgsqlConnectionString);
             var context = new NpgsqlContext(options.Options);
-            var products = context.Products.ToList();
-            var users = context.Users.ToList();
-            var animeshops = context.AnimeShops.ToList();
 
-            // app.Run();
+            app.Run();
         }
     }
 }
