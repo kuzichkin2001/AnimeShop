@@ -70,8 +70,6 @@ public class UserController : ControllerBase
         {
             var user = _mapper.Map<AnimeShop.Common.User>(userCreds);
             var result = await _userLogic.ChangePersonalInfoAsync(user);
-            
-            
 
             return Ok(result);
         }

@@ -30,6 +30,12 @@ public class AnimeShopDao : BaseDao, IAnimeShopDao
         return DNpgsqlContext.AnimeShops;
     }
 
+    public async Task CreateAnimeShopAsync(Common.AnimeShop animeShop)
+    {
+        await DNpgsqlContext.AddAsync(animeShop);
+        await DNpgsqlContext.SaveChangesAsync();
+    }
+
     public async Task<bool> RemoveAnimeShopAsync(int id)
     {
         var animeshop = await GetAnimeShopByIdAsync(id);

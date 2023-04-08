@@ -10,5 +10,6 @@ public class MappingProfile : Profile
     {
         CreateMap<UserCredentialsView, User>();
         CreateMap<ProductView, Product>();
+        CreateMap<AnimeShopView, AnimeShop.Common.AnimeShop>();
     }
 }

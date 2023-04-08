@@ -32,6 +32,11 @@ public class AnimeShopLogic : BaseLogic, IAnimeShopLogic
         return _animeShopDao.GetAllAnimeShops();
     }
 
+    public async Task CreateAnimeShopAsync(AnimeShop.Common.AnimeShop animeShop)
+    {
+        await _animeShopDao.CreateAnimeShopAsync(animeShop);
+    }
+
     public async Task<bool> RemoveAnimeShopAsync(int id)
     {
         return await _animeShopDao.RemoveAnimeShopAsync(id);
