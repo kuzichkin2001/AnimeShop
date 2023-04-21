@@ -32,12 +32,11 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [Route("user/receive")]
-    public async Task<IActionResult> GetUser(UserCredentialsView userCredentials)
+    public async Task<IActionResult> GetUser(string login, string password)
     {
         try
         {
-            var user = _mapper.Map<AnimeShop.Common.User>(userCredentials);
-            var result = await _userLogic.GetUserAsync(user.Email, user.Password);
+            var result = await _userLogic.GetUserAsync(login, password);
 
             return Ok(result);
         }
@@ -49,10 +48,9 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [Route("user/check_existence")]
-    public async Task<IActionResult> CheckUserExistence(UserCredentialsView userCredentials)
+    public async Task<IActionResult> CheckUserExistence(string login, string password)
     {
-        var user = _mapper.Map<AnimeShop.Common.User>(userCredentials);
-        var result = await _userLogic.CheckUserCredentialsAsync(user.Email, user.Password);
+        var result = await _userLogic.CheckUserCredentialsAsync(login, password);
 
         if (result.HasValue && result.Value)
         {

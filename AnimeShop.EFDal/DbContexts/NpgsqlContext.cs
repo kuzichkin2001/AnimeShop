@@ -8,6 +8,7 @@ namespace AnimeShop.Dal.DbContexts
 		public NpgsqlContext(DbContextOptions<NpgsqlContext> options)
 			:base(options)
 		{
+			Database.EnsureDeleted();
 			Database.EnsureCreated();
 		}
 

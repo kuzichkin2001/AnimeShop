@@ -8,4 +8,5 @@ public interface IUserDao
     Task RegisterUserAsync(User user);
     Task<bool?> CheckUserCredentialsAsync(string login, string oneTimePassword);
     Task<bool?> ChangePersonalInfoAsync(User user);
+    User? GetUserByChatId(long tgChatId);
 }

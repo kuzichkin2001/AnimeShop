@@ -38,4 +38,9 @@ public class UserDao : BaseDao, IUserDao
 
         return userCount != 0;
     }
+
+    public User? GetUserByChatId(long tgChatId)
+    {
+        return DNpgsqlContext.Users.FirstOrDefault(u => u.ChatId == tgChatId);
+    }
 }

@@ -4,7 +4,6 @@ namespace TestPet.Views;
 
 public class UserCredentialsView
 {
-    public int Id { get; set; }
     public string FirstName { get; set; }
     public string SecondName { get; set; }
     
