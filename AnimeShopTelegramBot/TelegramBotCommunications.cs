@@ -1,28 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using AnimeShop.Common;
 using AnimeShop.Dal.Interfaces;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
-using EnvironmentVariables = AnimeShopBot.Utils.EnvironmentVariables;
+using EnvironmentVariables = AnimeShopTelegramBot.Utils.EnvironmentVariables;
+using AnimeShopUser = AnimeShop.Common.User;
 
-namespace AnimeShopBot
+namespace AnimeShopTelegramBot
 {
     public class TelegramBotCommunications
     {
         private readonly TelegramBotClient _tgBot;
         private readonly IUserDao _userDao;
         private readonly ILogger<TelegramBotCommunications> _logger;
-        private readonly IDictionary<string, string> _credentials;
         
         private string PreviousMessage { get; set; }
 
@@ -37,14 +27,25 @@ namespace AnimeShopBot
             {
                 loggerBuilder.SetMinimumLevel(LogLevel.Trace).AddConsole();
             }));
-
-            _credentials = new Dictionary<string, string>();
             
             var token = options.Value.TelegramBotToken;
             _tgBot = new TelegramBotClient(token);
         }
 
-        private void GetUserCredentials(long chatId)
+        private AnimeShopUser? GetUserByLogin(string login)
+        {
+            var user = _userDao.GetNonactivatedUser(login);
+
+            if (user == null)
+            {
+                _logger.LogError("There's no non-activated user with such login {Login}", login);
+                return null;
+            }
+
+            return user;
+        }
+
+        private AnimeShopUser? GetUserCredentials(long chatId)
         {
             var user = _userDao.GetUserByChatId(chatId);
 
@@ -52,12 +53,12 @@ namespace AnimeShopBot
             {
                 _logger.LogWarning("You should bind a user with Telegram chat {ChatId}. " +
                                    "You should be signed up in an application via Telegram Bot", chatId);
-                throw new NullReferenceException("Сперва необходимо создать пользователя через бота.");
+
+                return null;
             }
-            _credentials.Add("login", user.Email);
-            _credentials.Add("password", user.Password);
             
             _logger.LogInformation("User credentials from chat {ChatId} were successfully got", chatId);
+            return user;
         }
 
         public void StartPolling()
@@ -76,75 +77,64 @@ namespace AnimeShopBot
             var message = update.Message.Text;
             var chatId = update.Message.Chat.Id;
             var rnd = new Random();
-            
-            GetUserCredentials(chatId);
 
-            string login;
-            string password;
-            if (_credentials.ContainsKey("login") && _credentials.ContainsKey("password"))
-            {
-                login = _credentials["login"];
-                password = _credentials["password"];
-            }
-            else
-            {
-                login = "";
-                password = "";
-            }
-            
-            
-            switch (message)
-            {
-                case "/start":
-                    _logger.LogInformation("Starting working with bot, user message: {Message}", message);
-                    tgClient.SendTextMessageAsync(chatId, "Добро пожаловать!", cancellationToken: token);
-                    
-                    PreviousMessage = "/start";
-                    break;
-                case "/getLogin":
-                    _logger.LogInformation("Trying to get login for user of chat: {ChatId}", chatId);
-                    tgClient.SendTextMessageAsync(chatId, "Введите логин:", cancellationToken: token);
-                    
-                    PreviousMessage = "/getLogin";
-                    break;
-                case "/getPassword":
-                    var bytes = new byte[25];
-                    rnd.NextBytes(bytes);
-                    var resultPassword = "";
+            var user = GetUserCredentials(chatId);
 
-                    if (_credentials.ContainsKey("login"))
-                    {
-                        var hash = SHA256.Create(message + SALT);
-                        var rPassword = hash.Hash;
-
-                        foreach (var c in rPassword)
+            if (user != null && !user.AccountActivated)
+            {
+                switch (message)
+                {
+                    case "/getPassword":
+                        var resultPassword = "";
+                        
+                        var bytes = new byte[25];
+                        rnd.NextBytes(bytes);
+                        
+                        foreach (var c in bytes)
                         {
-                            bool rndUpper = rnd.Next(0, 2) == 1;
-                            resultPassword += rndUpper ? (char) (c - 32) : (char) c;
+                            resultPassword += (char)(c % 26 + 94);
                         }
                         
                         tgClient.SendTextMessageAsync(chatId, resultPassword, cancellationToken: token);
-                    }
-                    else
-                    {
-                        tgClient.SendTextMessageAsync(chatId, "Необходимо сначала ввести логин",
-                            cancellationToken: token);
-                    }
-                    
-                    PreviousMessage = "/getPassword";
-                    break;
-                default:
-                    if (PreviousMessage == "/getLogin")
-                    {
-                        _credentials["login"] = message;
-                        tgClient.SendTextMessageAsync(
-                            chatId,
-                            "Сгенерируйте пароль при помощи команды /getPassword",
-                            cancellationToken: token);
-                    }
 
-                    PreviousMessage = message;
-                    break;
+                        user.Password = resultPassword;
+                        user.AccountActivated = true;
+                        _userDao.ChangePersonalInfoAsync(user);
+
+                        break;
+                    case "/getLogin":
+                        _logger.LogInformation("Trying to get login for user of chat: {ChatId}", chatId);
+                        tgClient.SendTextMessageAsync(chatId, "Введите логин:", cancellationToken: token);
+                        
+                        PreviousMessage = "/getLogin";
+                        break;
+                    default:
+                        if (PreviousMessage == "/getLogin")
+                        {
+                            user = GetUserByLogin(message);
+                            _userDao.ClearAllWithSameChatId(chatId);
+                            user.ChatId = chatId;
+
+                            tgClient.SendTextMessageAsync(
+                                chatId,
+                                "Сгенерируйте пароль при помощи команды /getPassword",
+                                cancellationToken: token);
+                        }
+                        
+                        PreviousMessage = message;
+                        break;
+                }
+            }
+            else if (user != null && user.AccountActivated)
+            {
+                tgClient.SendTextMessageAsync(chatId, "Ваш аккаунт распознан.",
+                    cancellationToken: token);
+            }
+            else if (user == null)
+            {
+                
+                tgClient.SendTextMessageAsync(chatId, "Введите логин с помощью /getLogin", cancellationToken: token);
+                PreviousMessage = "/getLogin";
             }
         }
 
@@ -153,10 +143,10 @@ namespace AnimeShopBot
             Exception ex,
             CancellationToken token)
         {
-            switch (PreviousMessage)
-            {
-                _logger.LogError("{ExceptionType}: There's some error", ex.GetType());
-            }
+            _logger.LogError(
+                "{ExceptionType}: There's some error. {ExceptionMessage}",
+                ex.GetType(),
+                ex.Message);
         }
     }
 }

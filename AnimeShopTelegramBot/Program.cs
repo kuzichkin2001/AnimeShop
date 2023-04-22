@@ -1,18 +1,18 @@
+using AnimeShopTelegramBot;
+using System.Collections.Immutable;
 using AnimeShop.Dal;
 using AnimeShop.Dal.DbContexts;
 using AnimeShop.Dal.Interfaces;
-using AnimeShopBot;
-using AnimeShopBot.Utils;
+using AnimeShopTelegramBot.Utils;
 using Microsoft.EntityFrameworkCore;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((hostContext, services) =>
+var builder = Host.CreateDefaultBuilder(args);
+var host = builder.ConfigureServices((hostContext, services) =>
     {
+        services.AddLogging();
+
         var generalConfiguration = hostContext.Configuration;
-        services.Configure<EnvironmentVariables>(
-            generalConfiguration.GetSection("EnvironmentVariables"));
-        
-        services.AddHostedService<Worker>();
+        services.Configure<EnvironmentVariables>(generalConfiguration.GetSection("EnvironmentVariables"));
 
         var npgsqlConfig = generalConfiguration
             .GetSection("EnvironmentVariables")
@@ -22,7 +22,13 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             options.UseNpgsql(npgsqlConfig?.NpgsqlConnectionString);
         });
-        services.AddSingleton<IUserDao, UserDao>();
+
+        var options = new DbContextOptionsBuilder<NpgsqlContext>();
+        options.UseNpgsql(npgsqlConfig?.NpgsqlConnectionString);
+
+        services.AddScoped<IScopedService, MyScopedService>();
+        services.AddScoped<IUserDao, UserDao>();
+        services.AddHostedService<Worker>();
     })
     .Build();
 

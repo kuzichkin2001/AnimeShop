@@ -24,7 +24,7 @@ public class UserLogic : BaseLogic, IUserLogic
         await _userDao.RegisterUserAsync(user);
     }
 
-    public async Task<bool?> CheckUserCredentialsAsync(string login, string oneTimePassword)
+    public async Task<bool> CheckUserCredentialsAsync(string login, string oneTimePassword)
     {
         return await _userDao.CheckUserCredentialsAsync(login, oneTimePassword);
     }

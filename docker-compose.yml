@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: animeshop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: igumug16
+      PGDATA: /Library/PostgreSQL/15/data
+  web_api:
+    build:
+      context: .
+      dockerfile: TestPet/Dockerfile
+    ports:
+      - "5001:80"
+  telegram_bot:
+    build:
+      context: .
+      dockerfile: AnimeShopTelegramBot/Dockerfile

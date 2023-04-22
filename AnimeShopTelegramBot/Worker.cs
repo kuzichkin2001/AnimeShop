@@ -1,27 +1,31 @@
 using AnimeShop.Dal.Interfaces;
-using AnimeShopBot.Utils;
+using AnimeShopTelegramBot.Utils;
 using Microsoft.Extensions.Options;
 
-namespace AnimeShopBot;
+namespace AnimeShopTelegramBot;
 
 public class Worker : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
-    private readonly IUserDao _userDao;
-    private readonly IOptions<EnvironmentVariables> _options;
+    private readonly IServiceProvider _serviceProvider;
 
-    public Worker(ILogger<Worker> logger, IUserDao userDao, IOptions<EnvironmentVariables> options)
+    public Worker(IServiceProvider serviceProvider)
     {
-        _logger = logger;
-        _userDao = userDao;
-        _options = options;
+        _serviceProvider = serviceProvider;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var telegramBot = new TelegramBotCommunications(_userDao, _options);
+        using (var scope = _serviceProvider.CreateScope())
+        {
+            var userDao = scope.ServiceProvider.GetRequiredService<IUserDao>();
+            var options = scope.ServiceProvider.GetRequiredService<IOptions<EnvironmentVariables>>();
+            
+            var telegramBot = new TelegramBotCommunications(userDao, options);
         
-        _logger.LogInformation("Telegram Bot started working");
-        telegramBot.StartPolling();
+            telegramBot.StartPolling();
+        }
+        
+        
+        return Task.CompletedTask;
     }
 }

@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     
     [HttpPost]
     [Route("user/register")]
-    public async Task<IActionResult> Register(UserCredentialsView userCredentials)
+    public async Task<IActionResult> Register([FromBody] UserCredentialsView userCredentials)
     {
         var user = _mapper.Map<AnimeShop.Common.User>(userCredentials);
 
@@ -38,7 +38,12 @@ public class UserController : ControllerBase
         {
             var result = await _userLogic.GetUserAsync(login, password);
 
-            return Ok(result);
+            if (result != null)
+            {
+                return Ok(result);
+            }
+
+            return NotFound("Cannot find user by login");
         }
         catch (Exception exp)
         {
@@ -52,9 +57,9 @@ public class UserController : ControllerBase
     {
         var result = await _userLogic.CheckUserCredentialsAsync(login, password);
 
-        if (result.HasValue && result.Value)
+        if (result)
         {
-            return Ok();
+            return Ok(new { Message = "success", Result = true });
         }
 
         return BadRequest($"There's no user with such credentials.");

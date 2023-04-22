@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>dotnet-AnimeShopBot-330C94DB-5143-4526-BDDC-EF2F625B89B4</UserSecretsId>
         <RootNamespace>AnimeShopBot</RootNamespace>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,4 +1,4 @@
-namespace AnimeShopBot.Utils;
+namespace AnimeShopTelegramBot.Utils;
 
 public class EnvironmentVariables
 {
