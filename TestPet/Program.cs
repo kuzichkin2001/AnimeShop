@@ -3,7 +3,6 @@ using AnimeShop.Bll;
 using AnimeShop.Bll.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AnimeShop.Dal.DbContexts;
-using AnimeShop.TelegramBot;
 using AnimeShop.Common;
 using AnimeShop.Dal;
 using AnimeShop.Dal.Interfaces;

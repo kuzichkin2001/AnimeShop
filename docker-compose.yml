@@ -8,13 +8,28 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: igumug16
       PGDATA: /Library/PostgreSQL/15/data
-  web_api:
-    build:
-      context: .
-      dockerfile: TestPet/Dockerfile
+
+  redis:
+    image: docker.io/bitnami/redis:7.0
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     ports:
-      - "5001:80"
-  telegram_bot:
-    build:
-      context: .
-      dockerfile: AnimeShopTelegramBot/Dockerfile
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+
+  rabbitmq3:
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=kuzichkinpa
+      - RABBITMQ_DEFAULT_PASS=3001
+    ports:
+      # AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+volumes:
+  redis_data:
+    driver: local

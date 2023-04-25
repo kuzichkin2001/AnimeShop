@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AnimeShop.EFDal;
 
-public class BaseDao : IAsyncDisposable
+public class BaseDao : IAsyncDisposable, IDisposable
 {
     protected readonly NpgsqlContext DNpgsqlContext;
 
@@ -15,5 +15,10 @@ public class BaseDao : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await DNpgsqlContext.DisposeAsync();
+    }
+
+    public void Dispose()
+    {
+        DNpgsqlContext.Dispose();
     }
 }
