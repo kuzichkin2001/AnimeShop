@@ -8,17 +8,34 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: igumug16
       PGDATA: /Library/PostgreSQL/15/data
+    volumes:
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d animeshop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
 
   redis:
     image: docker.io/bitnami/redis:7.0
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      - ALLOW_EMPTY_PASSWORD=no
+      - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     ports:
       - '6379:6379'
     volumes:
       - 'redis_data:/bitnami/redis/data'
+    depends_on:
+      - db
 
   rabbitmq3:
     image: rabbitmq:3.8-management-alpine
@@ -30,6 +47,34 @@ services:
       - '5672:5672'
       # HTTP management UI
       - '15672:15672'
+    depends_on:
+      - redis
+
+  webapi:
+    build:
+      context: .
+      dockerfile: TestPet/Dockerfile
+    ports:
+      - "5001:80"
+    depends_on:
+      - rabbitmq3
+
+  telegram_bot:
+    build:
+      context: .
+      dockerfile: AnimeShopTelegramBot/Dockerfile
+    depends_on:
+      - webapi
+
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: animeShopUI/Dockerfile
+  #   ports:
+  #     - "80:4200"
+  #   depends_on:
+  #     - telegram_bot
+
 volumes:
   redis_data:
     driver: local

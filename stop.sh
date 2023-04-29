@@ -1,4 +1,3 @@
-docker-compose down
+#!/bin/bash
 
-docker stop webapi_container
-docker stop tg_bot_container
+docker-compose down

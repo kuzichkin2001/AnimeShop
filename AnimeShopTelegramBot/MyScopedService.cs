@@ -1,24 +1,19 @@
+using AnimeShop.Dal.Interfaces;
+
 namespace AnimeShopTelegramBot;
 
 public class MyScopedService : IScopedService
 {
-    private IServiceProvider _serviceProvider;
+    private readonly ILogger<Worker> _logger;
+    private readonly IUserDao _userDao;
 
-    public MyScopedService(IServiceProvider serviceProvider)
+    public MyScopedService(ILogger<Worker> logger, IUserDao userDao)
     {
-        _serviceProvider = serviceProvider;
-    }
-
-    public IServiceProvider ServiceProvider
-    {
-        get
-        {
-            return _serviceProvider;
-        }
+        _logger = logger;
+        _userDao = userDao;
     }
 }
 
 public interface IScopedService
 {
-    IServiceProvider ServiceProvider { get; }
 }
